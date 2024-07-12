@@ -1,0 +1,46 @@
+# Versão da Linguagem Python
+from platform import python_version
+print('Versão da Linguagem Python Usada Neste Jupyter Notebook:', python_version())
+# Imports
+
+import pandas as pd
+from sklearn.cluster import KMeans
+#função Kmeans aprendizado não supervisionado
+from sklearn.preprocessing import StandardScaler
+#função StandartScaler treina modelo de ML
+
+# Carrega os dados
+df_dsa = pd.read_csv('dados/dados_clientes.csv')
+
+#mostra tipo do objeto
+type(df_dsa)
+
+# Visualiza as 10 primeiras linhas
+df_dsa.head(10)
+
+# Resumo estatístico
+df_dsa[['idade', 'renda_anual', 'pontuacao_gastos']].describe()
+
+# Cria o padronizador dos dados
+padronizador = StandardScaler()
+
+# Aplica o padronizador somente nas colunas de interesse -- Kmeans precisa receber dados na msma escala, padronizaods.
+dados_padronizados = padronizador.fit_transform(df_dsa[['idade', 'renda_anual', 'pontuacao_gastos']])
+
+# Definimos o número de clusters (k)
+k = 3
+# Criamos o modelo K-means
+kmeans = KMeans(n_clusters = k)
+
+# Treinamento do modelo com os dados padronizados
+kmeans.fit(dados_padronizados)
+
+# Atribuímos os rótulos dos clusters aos clientes
+df_dsa['cluster'] = kmeans.labels_
+
+# Exibe o resultado (10 primeiras linhas)
+df_dsa.head(10)
+
+# Salvamos o resultado em disco
+df_dsa.to_csv('dados/segmentos2.csv', index = False)
+
